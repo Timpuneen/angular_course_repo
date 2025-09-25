@@ -13,5 +13,4 @@
 
 
 
-# click buttons
-# -> console.log goes brrrr
+# click buttons -> console.log goes brrrr
