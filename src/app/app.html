@@ -1,23 +1,95 @@
 <div class="about-container">
   <header class="header">
-    <h1>About Me</h1>
-    <p class="subtitle">Full Stack Developer & Student & 10k trophies ClashRoyale</p>
+    <h1>{{ title }}</h1>
+    <p class="subtitle">{{ subtitle }}</p>
   </header>
 
   <main class="content">
     <section class="intro-section">
       <div class="profile-card">
-        <!-- <div class="profile-image">
-        </div> -->
-        <h2>Tima</h2>
-        <p class="role">FIT Student</p>
-        <p class="description">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
-          sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, 
-          quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-          Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-          Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum
-        </p>
+
+        <h2>{{ name }}</h2>
+
+        <p class="role">{{ role }}</p>
+        
+        <p class="description">{{ description }}</p>
+
+        <div class="interaction-section" style="margin-top: 20px; display: flex; flex-direction: column; gap: 15px; align-items: center;">
+          
+          <div [class.highlight]="likes >= 5" 
+               style="padding: 10px 20px; border-radius: 8px; background: #f8f9fa; transition: all 0.3s;">
+            <p style="margin: 0; font-size: 1.1rem;">
+              ❤️ Likes: <strong>{{ likes }}</strong>
+            </p>
+          </div>
+          
+          <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+            <button (click)="incrementLikes()" 
+                    [disabled]="isLikeButtonDisabled"
+                    class="action-button like-button">
+              Like
+            </button>
+
+            <button (click)="toggleThankYouMessage()" 
+                    class="action-button toggle-button">
+              {{ showThankYouMessage ? 'Hide Message' : 'Show Message' }}
+            </button>
+          </div>
+
+          <div *ngIf="showThankYouMessage" 
+               style="padding: 15px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px; color: #155724;">
+            <p style="margin: 0;">Thank you for visiting!</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="interactive-section" 
+             style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); border: 1px solid #e1e5e9;">
+      <h3 style="text-align: center; color: #2c3e50; margin: 0 0 25px 0;">Interactive Section</h3>
+      
+      <div style="display: flex; flex-direction: column; gap: 20px; max-width: 500px; margin: 0 auto;">
+        
+        <div>
+          <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #2c3e50;">
+            Enter Your Name:
+          </label>
+          <input [(ngModel)]="userName" 
+                 type="text" 
+                 placeholder="Your name here..."
+                 style="width: 100%; padding: 10px; border: 2px solid #e1e5e9; border-radius: 8px; font-size: 1rem; box-sizing: border-box;">
+          
+          <div *ngIf="userName.trim()" 
+               style="margin-top: 10px; padding: 10px; background: #e7f3ff; border-radius: 8px;">
+            <p style="margin: 0; color: #0066cc;">
+              Hello, <strong>{{ userName }}</strong>!
+            </p>
+          </div>
+        </div>
+        
+        <div>
+          <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #2c3e50;">
+            Leave Your Email:
+          </label>
+          <input [(ngModel)]="userEmail" 
+                 type="email" 
+                 placeholder="your.email@example.com"
+                 style="width: 100%; padding: 10px; border: 2px solid #e1e5e9; border-radius: 8px; font-size: 1rem; box-sizing: border-box;">
+          
+          <button (click)="subscribe()" 
+                  [disabled]="!userEmail.trim()"
+                  class="action-button subscribe-button"
+                  style="margin-top: 10px; width: 100%;">
+            Subscribe
+          </button>
+          
+          <div *ngIf="isSubscribed" 
+               style="margin-top: 10px; padding: 15px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px; color: #155724;">
+            <p style="margin: 0;">
+              Thanks, <strong>{{ userEmail }}</strong>, we'll be in touch!
+            </p>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -27,25 +99,25 @@
         <div class="contact-item">
           <div>
             <strong>Email</strong>
-            <p>timpuh_work@mail.ru</p>
+            <p>{{ email }}</p>
           </div>
         </div>
         <div class="contact-item">
           <div>
             <strong>Phone</strong>
-            <p>+7 705 195 8843</p>
+            <p>{{ phone }}</p>
           </div>
         </div>
         <div class="contact-item">
           <div>
             <strong>LinkedIn</strong>
-            <p>linkedin.com/in/timur-baltabayev/</p>
+            <p>{{ linkedin }}</p>
           </div>
         </div>
         <div class="contact-item">
           <div>
             <strong>GitHub</strong>
-            <p>github.com/timpuneen</p>
+            <p>{{ github }}</p>
           </div>
         </div>
       </div>
@@ -54,12 +126,7 @@
     <section class="skills-section">
       <h3>Skills & Technologies</h3>
       <div class="skills-list">
-        <span class="skill-tag">Angular</span>
-        <span class="skill-tag">TypeScript</span>
-        <span class="skill-tag">HTML/CSS</span>
-        <span class="skill-tag">JavaScript</span>
-        <span class="skill-tag">Git</span>
-        <span class="skill-tag">Node.js</span>
+        <span *ngFor="let skill of skills" class="skill-tag">{{ skill }}</span>
       </div>
     </section>
   </main>

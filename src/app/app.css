@@ -231,3 +231,86 @@
     max-width: 200px;
   }
 }
+
+.action-button {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.action-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.action-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.action-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.like-button {
+  background: #667eea;
+  color: white;
+}
+
+.like-button:hover:not(:disabled) {
+  background: #5a67d8;
+}
+
+.toggle-button {
+  background: #48bb78;
+  color: white;
+}
+
+.toggle-button:hover:not(:disabled) {
+  background: #38a169;
+}
+
+.subscribe-button {
+  background: #764ba2;
+  color: white;
+}
+
+.subscribe-button:hover:not(:disabled) {
+  background: #6b3f99;
+}
+
+.highlight {
+  background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%) !important;
+  color: white !important;
+  font-weight: bold;
+  animation: pulse 0.5s ease;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.interactive-section {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e1e5e9;
+}
+
+.interactive-section h3 {
+  text-align: center;
+  color: #2c3e50;
+  margin: 0 0 25px 0;
+  font-size: 1.5rem;
+}
