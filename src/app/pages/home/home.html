@@ -1,0 +1,61 @@
+<div class="home-container">
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1 class="hero-title">Welcome to Rick and Morty Explorer</h1>
+      <p class="hero-subtitle">
+        Dive into the multiverse and explore all your favorite characters from the Rick and Morty universe. 
+        Search, discover, and learn about hundreds of characters across infinite dimensions.
+      </p>
+      <div class="hero-buttons">
+        <a routerLink="/items" class="btn btn-primary">
+          Explore Characters
+        </a>
+        <a routerLink="/about" class="btn btn-secondary">
+          Learn More
+        </a>
+      </div>
+    </div>
+    
+    <div class="hero-image">
+      <img 
+        src="https://rickandmortyapi.com/api/character/avatar/1.jpeg" 
+        alt="Rick Sanchez"
+        class="portal-image portal-1"
+      />
+      <img 
+        src="https://rickandmortyapi.com/api/character/avatar/2.jpeg" 
+        alt="Morty Smith"
+        class="portal-image portal-2"
+      />
+      <img 
+        src="https://rickandmortyapi.com/api/character/avatar/3.jpeg" 
+        alt="Summer Smith"
+        class="portal-image portal-3"
+      />
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features">
+    <h2 class="features-title">What You Can Do</h2>
+    <div class="features-grid">
+      <div class="feature-card" *ngFor="let feature of features">
+        <div class="feature-icon">{{ feature.icon }}</div>
+        <h3 class="feature-title">{{ feature.title }}</h3>
+        <p class="feature-description">{{ feature.description }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta">
+    <div class="cta-content">
+      <h2>Ready to Explore?</h2>
+      <p>Start your journey through the multiverse now!</p>
+      <a routerLink="/items" class="btn btn-cta">
+        Get Started →
+      </a>
+    </div>
+  </section>
+</div>

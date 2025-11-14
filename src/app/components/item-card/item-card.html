@@ -1,0 +1,28 @@
+<div class="card">
+  <div class="card-image">
+    <img [src]="item.image" [alt]="item.name" />
+    <span class="status-badge" [class]="'status-' + item.status.toLowerCase()">
+      {{ item.status }}
+    </span>
+  </div>
+  
+  <div class="card-content">
+    <h3 class="card-title">{{ item.name }}</h3>
+    
+    <div class="card-info">
+      <p class="info-item">
+        <span class="info-label">Species:</span>
+        <span class="info-value">{{ item.species }}</span>
+      </p>
+      
+      <p class="info-item">
+        <span class="info-label">Location:</span>
+        <span class="info-value">{{ item.location.name }}</span>
+      </p>
+    </div>
+    
+    <a [routerLink]="['/items', item.id]" class="card-button">
+      View Details →
+    </a>
+  </div>
+</div>

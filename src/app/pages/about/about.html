@@ -1,0 +1,73 @@
+<div class="about-container">
+  <div class="about-header">
+    <h1>About This Project</h1>
+    <p class="subtitle">A modern Angular application for exploring the Rick and Morty universe</p>
+  </div>
+
+  <section class="about-section">
+    <div class="section-content">
+      <h2>🎯 Project Overview</h2>
+      <p>
+        This application is built with Angular 19 and demonstrates modern web development practices. 
+        It provides a seamless experience for browsing and searching through hundreds of characters 
+        from the popular animated series Rick and Morty.
+      </p>
+      <p>
+        The app utilizes the <a href="https://rickandmortyapi.com" target="_blank" rel="noopener">Rick and Morty API</a>, 
+        a free and open-source REST API that provides comprehensive data about the show's characters, 
+        locations, and episodes.
+      </p>
+    </div>
+  </section>
+
+  <section class="about-section gray">
+    <div class="section-content">
+      <h2>🛠️ Technologies Used</h2>
+      <div class="tech-grid">
+        <div class="tech-card" *ngFor="let tech of technologies">
+          <div class="tech-icon">{{ tech.icon }}</div>
+          <div class="tech-name">{{ tech.name }}</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="about-section">
+    <div class="section-content">
+      <h2>✨ Key Features</h2>
+      <ul class="features-list">
+        <li *ngFor="let feature of features">
+          <span class="feature-check">✓</span>
+          {{ feature }}
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="about-section gray">
+    <div class="section-content">
+      <h2>📚 Architecture</h2>
+      <p>
+        This application follows Angular best practices and modern architectural patterns:
+      </p>
+      <ul class="architecture-list">
+        <li><strong>Standalone Components:</strong> Using Angular's latest standalone API for better tree-shaking</li>
+        <li><strong>Lazy Loading:</strong> Routes are lazy-loaded for optimal performance</li>
+        <li><strong>Reactive Programming:</strong> RxJS for handling asynchronous data streams</li>
+        <li><strong>Service Layer:</strong> Centralized API communication through services</li>
+        <li><strong>Router Integration:</strong> URL-based state management for search queries</li>
+        <li><strong>Responsive Design:</strong> Mobile-first approach with modern CSS</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="about-section cta-section">
+    <div class="section-content">
+      <h2>Ready to Explore?</h2>
+      <p>Discover all the characters from the Rick and Morty universe!</p>
+      <a routerLink="/items" class="btn btn-primary">
+        Browse Characters →
+      </a>
+    </div>
+  </section>
+</div>

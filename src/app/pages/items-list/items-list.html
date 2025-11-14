@@ -1,0 +1,65 @@
+<div class="items-container">
+  <div class="header">
+    <h1>Rick and Morty Characters</h1>
+    <p class="subtitle">Explore the multiverse of characters</p>
+  </div>
+
+  <div class="search-section">
+    <div class="search-box">
+      <input 
+        type="text" 
+        class="search-input"
+        [(ngModel)]="searchTerm"
+        (input)="onSearchChange(searchTerm)"
+        placeholder="Search characters by name (e.g., Rick, Morty)..."
+      />
+
+      @if (searchTerm) {
+        <button 
+          class="clear-button" 
+          (click)="clearSearch()"
+          aria-label="Clear search">
+          ✕
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading characters...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error && !loading) {
+    <div class="error-state">
+      <div class="error-icon">⚠️</div>
+      <h3>Oops!</h3>
+      <p>{{ errorMessage }}</p>
+      <button class="retry-button" (click)="loadItems('')">
+        Try Again
+      </button>
+    </div>
+  }
+
+  <!-- Items Grid -->
+  @if (!loading && !error && items.length > 0) {
+    <div class="items-grid">
+      @for (item of items; track item.id) {
+        <app-item-card [item]="item"></app-item-card>
+      }
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!loading && !error && items.length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon">🔍</div>
+      <h3>No characters found</h3>
+      <p>Try searching for something else</p>
+    </div>
+  }
+</div>

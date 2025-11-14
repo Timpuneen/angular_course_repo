@@ -1,15 +1,14 @@
 import { Component } from '@angular/core';
-import { CharacterListComponent } from './character-list/character-list';
+import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CharacterListComponent],
-  template: `
-    <app-character-list></app-character-list>
-  `,
-  styles: []
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule],
+  templateUrl: './app.html',
+  styleUrls: ['./app.css']
 })
 export class AppComponent {
-  title = 'character-list-app';
+  title = 'Rick and Morty Explorer';
 }
