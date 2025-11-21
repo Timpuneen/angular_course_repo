@@ -13,9 +13,26 @@
       <li>
         <a routerLink="/about" routerLinkActive="active">About</a>
       </li>
-      <li>
-        <a routerLink="/login" routerLinkActive="active">Login</a>
-      </li>
+
+      @if (!(currentUser$ | async)) {
+        <li>
+          <a routerLink="/login" routerLinkActive="active">Login</a>
+        </li>
+        <li>
+          <a routerLink="/signup" routerLinkActive="active" class="signup-link">Sign Up</a>
+        </li>
+      }
+      @else {
+        <li>
+          <a routerLink="/profile" routerLinkActive="active" class="profile-link">
+            <span class="user-avatar">{{ (currentUser$ | async)?.email?.charAt(0) | uppercase }}</span>
+            Profile
+          </a>
+        </li>
+        <li>
+          <button (click)="onLogout()" class="logout-btn">Logout</button>
+        </li>
+      }
     </ul>
   </div>
 </nav>

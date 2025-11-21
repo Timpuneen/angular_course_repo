@@ -37,6 +37,8 @@ export class LoginComponent {
         this.router.navigate(['/profile']);
       },
       error: (error) => {
+        this.email = '';
+        this.password = '';
         this.isLoading = false;
         this.errorMessage = error;
       }
