@@ -1,0 +1,96 @@
+<div class="profile-container">
+
+  @if (isLoading) {
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Loading profile...</p>
+    </div>
+  }
+  @else if (user) {
+    <div class="profile-card">
+      <div class="profile-header">
+        <div class="profile-avatar">
+          {{ user.email?.charAt(0)?.toUpperCase() }}
+        </div>
+        <h1>Welcome Back!</h1>
+        <p class="user-email">{{ user.email }}</p>
+      </div>
+
+      <div class="profile-info">
+        <h2>Account Information</h2>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">User ID</div>
+            <div class="info-value">{{ user.uid }}</div>
+          </div>
+
+          <div class="info-item">
+            <div class="info-label">Email</div>
+            <div class="info-value">{{ user.email }}</div>
+          </div>
+
+          <div class="info-item">
+            <div class="info-label">Email Verified</div>
+            <div class="info-value">
+              <span [class]="user.emailVerified ? 'badge badge-success' : 'badge badge-warning'">
+                {{ user.emailVerified ? '✓ Verified' : '⚠ Not Verified' }}
+              </span>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <div class="info-label">Account Created</div>
+            <div class="info-value">
+              {{ user.metadata.creationTime | date:'medium' }}
+            </div>
+          </div>
+
+          <div class="info-item">
+            <div class="info-label">Last Sign In</div>
+            <div class="info-value">
+              {{ user.metadata.lastSignInTime | date:'medium' }}
+            </div>
+          </div>
+
+          <div class="info-item">
+            <div class="info-label">Account Age</div>
+            <div class="info-value">{{ getAccountAge() }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-stats">
+        <div class="stat-card">
+          <div class="stat-icon"></div>
+          <div class="stat-value">{{ getAccountAge() }}</div>
+          <div class="stat-label">Member for</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon"></div>
+          <div class="stat-value">Active</div>
+          <div class="stat-label">Account Status</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon"></div>
+          <div class="stat-value">{{ user.emailVerified ? 'Yes' : 'No' }}</div>
+          <div class="stat-label">Email Verified</div>
+        </div>
+      </div>
+
+      <div class="profile-actions">
+        <button (click)="onLogout()" class="btn btn-logout">
+          Logout
+        </button>
+      </div>
+    </div>
+  }
+  @else {
+    <div class="no-user">
+      <p>No user data available. Redirecting to login...</p>
+    </div>
+  }
+
+</div>

@@ -5,15 +5,16 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-signup',
   standalone: true,
   imports: [CommonModule, RouterLink, FormsModule],
-  templateUrl: './login.html',
-  styleUrls: ['./login.css']
+  templateUrl: './signup.html',
+  styleUrls: ['./signup.css']
 })
-export class LoginComponent {
+export class SignupComponent {
   email: string = '';
   password: string = '';
+  confirmPassword: string = '';
   errorMessage: string = '';
   isLoading: boolean = false;
 
@@ -22,16 +23,27 @@ export class LoginComponent {
     private router: Router
   ) {}
 
-  onLogin(): void {
-    if (!this.email || !this.password) {
-      this.errorMessage = 'Please enter email and password';
+  onSignup(): void {
+    // Валидация
+    if (!this.email || !this.password || !this.confirmPassword) {
+      this.errorMessage = 'Please fill in all fields';
+      return;
+    }
+
+    if (this.password !== this.confirmPassword) {
+      this.errorMessage = 'Passwords do not match';
+      return;
+    }
+
+    if (this.password.length < 6) {
+      this.errorMessage = 'Password must be at least 6 characters';
       return;
     }
 
     this.isLoading = true;
     this.errorMessage = '';
 
-    this.authService.login(this.email, this.password).subscribe({
+    this.authService.signup(this.email, this.password).subscribe({
       next: () => {
         this.isLoading = false;
         this.router.navigate(['/profile']);

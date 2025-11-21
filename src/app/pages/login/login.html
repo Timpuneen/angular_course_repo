@@ -1,29 +1,67 @@
 <div class="login-container">
   <div class="login-card">
     <div class="login-icon"></div>
-    <h1>Authentication</h1>
+    <h1>Login</h1>
     <p class="login-message">
-      Authentication functionality is coming soon!
+      Sign in to access your profile and personalized features
     </p>
-    <div class="info-box">
-      <h3>Under Construction</h3>
-      <p>
-        This page is a placeholder for future authentication features. 
-        In the next version, you'll be able to:
-      </p>
-      <ul>
-        <li>Create an account</li>
-        <li>Sign in with your credentials</li>
-        <li>Save your favorite characters</li>
-        <li>Create custom character lists</li>
-      </ul>
+
+    <form (ngSubmit)="onLogin()" #loginForm="ngForm" class="login-form">
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          [(ngModel)]="email"
+          required
+          email
+          placeholder="Enter your email"
+          [disabled]="isLoading"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          [(ngModel)]="password"
+          required
+          minlength="6"
+          placeholder="Enter your password"
+          [disabled]="isLoading"
+        />
+      </div>
+
+      @if (errorMessage) {
+        <div class="error-message">
+          {{ errorMessage }}
+        </div>
+      }
+      
+      <button 
+        type="submit" 
+        [disabled]="isLoading || !loginForm.form.valid"
+        class="btn btn-primary btn-full"
+      >
+        {{ isLoading ? 'Logging in...' : 'Login' }}
+      </button>
+    </form>
+
+    <div class="divider">
+      <span>OR</span>
     </div>
-    <div class="login-actions">
+
+    <div class="signup-prompt">
+      Don't have an account? 
+      <a routerLink="/signup" class="signup-link">Sign up here</a>
+    </div>
+
+    <div class="back-link">
       <a routerLink="/" class="btn btn-secondary">
         ← Back to Home
-      </a>
-      <a routerLink="/items" class="btn btn-primary">
-        Browse Characters
       </a>
     </div>
   </div>

@@ -1,4 +1,4 @@
-.login-container {
+.signup-container {
   min-height: 70vh;
   display: flex;
   align-items: center;
@@ -6,7 +6,7 @@
   padding: 40px 20px;
 }
 
-.login-card {
+.signup-card {
   background: white;
   border-radius: 20px;
   padding: 50px 50px;
@@ -16,26 +16,26 @@
   text-align: center;
 }
 
-.login-icon {
+.signup-icon {
   font-size: 64px;
   margin-bottom: 20px;
 }
 
-.login-card h1 {
+.signup-card h1 {
   font-size: 32px;
   color: #2c3e50;
   margin: 0 0 15px 0;
   font-weight: 800;
 }
 
-.login-message {
+.signup-message {
   font-size: 16px;
   color: #7f8c8d;
   margin: 0 0 35px 0;
 }
 
 /* Form Styles */
-.login-form {
+.signup-form {
   margin-bottom: 30px;
 }
 
@@ -154,20 +154,20 @@
   z-index: 1;
 }
 
-/* Signup Prompt */
-.signup-prompt {
+/* Login Prompt */
+.login-prompt {
   font-size: 15px;
   color: #666;
   margin-bottom: 20px;
 }
 
-.signup-link {
+.login-link {
   color: #00b5cc;
   text-decoration: none;
   font-weight: 600;
 }
 
-.signup-link:hover {
+.login-link:hover {
   text-decoration: underline;
 }
 
@@ -178,15 +178,15 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-  .login-card {
+  .signup-card {
     padding: 40px 30px;
   }
 
-  .login-card h1 {
+  .signup-card h1 {
     font-size: 28px;
   }
 
-  .login-icon {
+  .signup-icon {
     font-size: 56px;
   }
 }
