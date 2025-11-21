@@ -15,7 +15,7 @@
 }
 
 .hero-content {
-  animation: slideInLeft 0.8s ease-out;
+  /* animation: slideInLeft 0.8s ease-out; */
 }
 
 @keyframes slideInLeft {
@@ -90,7 +90,7 @@
 .hero-image {
   position: relative;
   height: 400px;
-  animation: slideInRight 0.8s ease-out;
+  /* animation: slideInRight 0.8s ease-out; */
 }
 
 @keyframes slideInRight {
@@ -115,28 +115,28 @@
   transition: transform 0.3s ease;
 }
 
-.portal-image:hover {
+/* .portal-image:hover {
   transform: scale(1.1) rotate(5deg);
   z-index: 10;
-}
+} */
 
 .portal-1 {
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  animation: float 3s ease-in-out infinite;
+  /* animation: float 3s ease-in-out infinite; */
 }
 
 .portal-2 {
   bottom: 0;
   left: 0;
-  animation: float 3s ease-in-out infinite 1s;
+  /* animation: float 3s ease-in-out infinite 1s; */
 }
 
 .portal-3 {
   bottom: 0;
   right: 0;
-  animation: float 3s ease-in-out infinite 2s;
+  /* animation: float 3s ease-in-out infinite 2s; */
 }
 
 @keyframes float {

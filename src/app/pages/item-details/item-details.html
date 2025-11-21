@@ -11,7 +11,7 @@
   <!-- Error State -->
   @if (error && !loading) {
     <div class="error-state">
-      <div class="error-icon">⚠️</div>
+      <div class="error-icon"></div>
       <h2>Something went wrong</h2>
       <p>{{ errorMessage }}</p>
       <div class="button-group">
@@ -28,7 +28,7 @@
   <!-- Not Found State -->
   @if (notFound && !loading) {
     <div class="not-found-state">
-      <div class="not-found-icon">🔍</div>
+      <div class="not-found-icon"></div>
       <h2>Character Not Found</h2>
       <p>{{ errorMessage }}</p>
       <div class="button-group">

@@ -42,9 +42,6 @@ export class ItemsService {
 
   constructor(private http: HttpClient) {}
 
-  /**
-   * Get items with optional search query and pagination
-   */
   getItems(query?: string, page: number = 1): Observable<ApiResponse> {
     let params = new HttpParams().set('page', page.toString());
 
@@ -65,9 +62,6 @@ export class ItemsService {
     );
   }
 
-  /**
-   * Get a single item by ID
-   */
   getItemById(id: string | number): Observable<Item> {
     const url = `${this.apiUrl}/${id}`;
     console.log('[ItemsService] getItemById → URL:', url);
@@ -82,21 +76,4 @@ export class ItemsService {
     );
   }
 
-  /**
-   * Get multiple items by IDs
-   */
-  getItemsByIds(ids: number[]): Observable<Item[]> {
-    const idsString = ids.join(',');
-    const url = `${this.apiUrl}/${idsString}`;
-    console.log('[ItemsService] getItemsByIds → URL:', url);
-
-    return this.http.get<Item[]>(url).pipe(
-      tap({
-        next: (res) =>
-          console.log('[ItemsService] getItemsByIds → SUCCESS:', res),
-        error: (err) =>
-          console.error('[ItemsService] getItemsByIds → ERROR:', err)
-      })
-    );
-  }
 }
