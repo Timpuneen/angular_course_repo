@@ -2,10 +2,14 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subject, Subscription } from 'rxjs';
+import { Subject, Subscription, Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { ItemsService, Item } from '../../services/item.service';
+import { Store } from '@ngrx/store';
+
+import { Item } from '../../services/item.service';
 import { ItemCardComponent } from '../../components/item-card/item-card';
+import * as ItemsActions from '../../items/state/items.actions';
+import * as ItemsSelectors from '../../items/state/items.selectors';
 
 @Component({
   selector: 'app-items-list',
@@ -15,10 +19,12 @@ import { ItemCardComponent } from '../../components/item-card/item-card';
   styleUrls: ['./items-list.css']
 })
 export class ItemsListComponent implements OnInit, OnDestroy {
-  items: Item[] = [];
-  loading = false;
-  error = false;
-  errorMessage = '';
+  // Observables from store
+  items$!: Observable<Item[]>;
+  loading$!: Observable<boolean>;
+  error$!: Observable<string | null>;
+  
+  // Local state
   searchTerm = '';
   
   private searchSubject = new Subject<string>();
@@ -26,60 +32,38 @@ export class ItemsListComponent implements OnInit, OnDestroy {
   private routeSubscription?: Subscription;
 
   constructor(
-    private itemsService: ItemsService,
+    private store: Store,
     private route: ActivatedRoute,
     private router: Router
   ) {
-    console.log('[ItemsList] constructor()');
+    console.log('[ItemsList] constructor() - NgRx version');
+    
+    // Initialize observables in constructor
+    this.items$ = this.store.select(ItemsSelectors.selectItems);
+    this.loading$ = this.store.select(ItemsSelectors.selectListLoading);
+    this.error$ = this.store.select(ItemsSelectors.selectListError);
   }
 
   ngOnInit() {
     console.log('[ItemsList] ngOnInit()');
 
-    // Handle URL query params ("q")
     this.routeSubscription = this.route.queryParams.subscribe(params => {
       const query = params['q'] || '';
 
       console.log('[ItemsList] queryParams changed:', params);
-      console.log('[ItemsList] Loading items with query:', query);
+      console.log('[ItemsList] Dispatching loadItems with query:', query);
 
       this.searchTerm = query;
-      this.loadItems(query);
+      
+      this.store.dispatch(ItemsActions.loadItems({ query, page: 1 }));
     });
 
-    // Debounce search input
     this.searchSubscription = this.searchSubject.pipe(
       debounceTime(500),
       distinctUntilChanged()
     ).subscribe(value => {
       console.log('[ItemsList] debounced search:', value);
       this.updateUrlAndSearch(value);
-    });
-  }
-
-  loadItems(query: string = '') {
-    console.log('[ItemsList] loadItems() →', query);
-
-    this.loading = true;
-    this.error = false;
-
-    this.itemsService.getItems(query).subscribe({
-      next: (response) => {
-        console.log('[ItemsList] SUCCESS:', response);
-        this.items = response.results;
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('[ItemsList] ERROR:', err);
-
-        this.error = true;
-        this.items = [];
-        this.loading = false;
-
-        this.errorMessage = query
-          ? `No characters found for "${query}". Try another search term!`
-          : 'Failed to load characters. Please try again later.';
-      }
     });
   }
 

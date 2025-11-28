@@ -1,7 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { ItemsService, Item } from '../../services/item.service';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+
+import { Item } from '../../services/item.service';
+import * as ItemsActions from '../../items/state/items.actions';
+import * as ItemsSelectors from '../../items/state/items.selectors';
 
 @Component({
   selector: 'app-item-details',
@@ -10,55 +15,46 @@ import { ItemsService, Item } from '../../services/item.service';
   templateUrl: './item-details.html',
   styleUrls: ['./item-details.css']
 })
-export class ItemDetailsComponent implements OnInit {
-  item: Item | null = null;
-  loading = true;
-  error = false;
-  notFound = false;
-  errorMessage = '';
+export class ItemDetailsComponent implements OnInit, OnDestroy {
+  item$!: Observable<Item | null>;
+  loading$!: Observable<boolean>;
+  error$!: Observable<string | null>;
 
   constructor(
+    private store: Store,
     private route: ActivatedRoute,
     private router: Router,
-    private location: Location,
-    private itemsService: ItemsService
-  ) {}
+    private location: Location
+  ) {
+    console.log('[ItemDetails] constructor() - NgRx version');
+    
+    this.item$ = this.store.select(ItemsSelectors.selectSelectedItem);
+    this.loading$ = this.store.select(ItemsSelectors.selectDetailsLoading);
+    this.error$ = this.store.select(ItemsSelectors.selectDetailsError);
+  }
 
   ngOnInit() {
+    console.log('[ItemDetails] ngOnInit()');
+    
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
+      
       if (id) {
-        this.loadItem(id);
+        console.log('[ItemDetails] Loading item with id:', id);
+        // Dispatch action to load item
+        this.store.dispatch(ItemsActions.loadItem({ id }));
       } else {
-        this.notFound = true;
-        this.loading = false;
+        console.error('[ItemDetails] No ID in route params');
+        this.store.dispatch(ItemsActions.loadItemFailure({ 
+          error: 'Invalid character ID' 
+        }));
       }
     });
   }
 
-  loadItem(id: string) {
-    this.loading = true;
-    this.error = false;
-    this.notFound = false;
-
-    this.itemsService.getItemById(id).subscribe({
-      next: (item) => {
-        this.item = item;
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('Error loading item:', err);
-        this.loading = false;
-        
-        if (err.status === 404) {
-          this.notFound = true;
-          this.errorMessage = `Character with ID ${id} not found.`;
-        } else {
-          this.error = true;
-          this.errorMessage = 'Failed to load character details. Please try again later.';
-        }
-      }
-    });
+  ngOnDestroy() {
+    console.log('[ItemDetails] ngOnDestroy() - clearing selected item');
+    this.store.dispatch(ItemsActions.clearSelectedItem());
   }
 
   goBack() {
@@ -69,7 +65,7 @@ export class ItemDetailsComponent implements OnInit {
     this.router.navigateByUrl('/items');
   }
 
-  getEpisodeCount(): number {
-    return this.item?.episode?.length || 0;
+  getEpisodeCount(item: Item | null): number {
+    return item?.episode?.length || 0;
   }
 }
