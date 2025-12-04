@@ -33,20 +33,20 @@ export const selectDetailsError = createSelector(
   (state: ItemsState) => state.detailsError
 );
 
-export const selectTotalCount = createSelector(
-  selectItemsState,
-  (state: ItemsState) => state.totalCount
-);
+// export const selectTotalCount = createSelector(
+//   selectItemsState,
+//   (state: ItemsState) => state.totalCount
+// );
 
-export const selectTotalPages = createSelector(
-  selectItemsState,
-  (state: ItemsState) => state.totalPages
-);
+// export const selectTotalPages = createSelector(
+//   selectItemsState,
+//   (state: ItemsState) => state.totalPages
+// );
 
-export const selectCurrentPage = createSelector(
-  selectItemsState,
-  (state: ItemsState) => state.currentPage
-);
+// export const selectCurrentPage = createSelector(
+//   selectItemsState,
+//   (state: ItemsState) => state.currentPage
+// );
 
 export const selectItemsWithLoading = createSelector(
   selectItems,
