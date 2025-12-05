@@ -26,5 +26,25 @@
         ]
       }
     }
+  ],
+  "dataGroups": [
+    {
+      "name": "rick-and-morty-api",
+      "urls": [
+        "https://rickandmortyapi.com/api/**"
+      ],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "maxSize": 100,
+        "maxAge": "1h",
+        "timeout": "5s"
+      }
+    }
+  ],
+  "navigationUrls": [
+    "/**",
+    "!/**/*.*",
+    "!/**/*__*",
+    "!/**/*__*/**"
   ]
 }
