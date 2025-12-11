@@ -24,9 +24,14 @@ export class SignupComponent {
   ) {}
 
   onSignup(): void {
-    // Валидация
     if (!this.email || !this.password || !this.confirmPassword) {
       this.errorMessage = 'Please fill in all fields';
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.email)) {
+      this.errorMessage = 'Please enter a valid email address';
       return;
     }
 
@@ -35,8 +40,21 @@ export class SignupComponent {
       return;
     }
 
-    if (this.password.length < 6) {
-      this.errorMessage = 'Password must be at least 6 characters';
+    if (this.password.length < 8) {
+      this.errorMessage = 'Password must be at least 8 characters';
+      return;
+    }
+
+    const hasNumber = /\d/.test(this.password);
+    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(this.password);
+
+    if (!hasNumber) {
+      this.errorMessage = 'Password must contain at least one number';
+      return;
+    }
+
+    if (!hasSpecial) {
+      this.errorMessage = 'Password must contain at least one special character (!@#$%^&*...)';
       return;
     }
 
