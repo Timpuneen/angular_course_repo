@@ -1,0 +1,35 @@
+<div class="favorites-container">
+  <div class="favorites-header">
+    <h1>My Favorites</h1>
+    <a routerLink="/items" class="back-link">← Back to Items</a>
+  </div>
+
+  <div class="favorites-content">
+    <ng-container *ngIf="favoriteItems$ | async as items; else loading">
+      <div *ngIf="items.length === 0" class="empty-state">
+        <p>No favorites yet</p>
+        <a routerLink="/items" class="browse-link">Browse Items</a>
+      </div>
+
+      <div *ngIf="items.length > 0" class="favorites-grid">
+        <div *ngFor="let item of items; trackBy: trackByItemId" class="favorite-card">
+          <img [src]="item.image" [alt]="item.name" class="item-image">
+          <div class="item-info">
+            <h3>{{ item.name }}</h3>
+            <p class="item-status">{{ item.status }} - {{ item.species }}</p>
+            <div class="item-actions">
+              <a [routerLink]="['/items', item.id]" class="view-btn">View Details</a>
+              <button (click)="removeFromFavorites(item.id)" class="remove-btn">Remove</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-template #loading>
+      <div class="loading-state">
+        <p>Loading favorites...</p>
+      </div>
+    </ng-template>
+  </div>
+</div>
