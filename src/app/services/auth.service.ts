@@ -44,7 +44,7 @@ export class AuthService {
         errorMessage = 'Invalid email address';
         break;
       case 'auth/weak-password':
-        errorMessage = 'Password should be at least 6 characters';
+        errorMessage = 'Password should be at least 8 characters';
         break;
       case 'auth/user-not-found':
         errorMessage = 'No user found with this email';
