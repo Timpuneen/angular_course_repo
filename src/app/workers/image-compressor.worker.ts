@@ -3,7 +3,6 @@
 addEventListener('message', ({ data }) => {
   const { imageData, quality } = data;
 
-  // Создаём canvas для сжатия
   const canvas = new OffscreenCanvas(imageData.width, imageData.height);
   const ctx = canvas.getContext('2d');
 
@@ -12,10 +11,8 @@ addEventListener('message', ({ data }) => {
     return;
   }
 
-  // Рисуем изображение
   ctx.putImageData(imageData, 0, 0);
 
-  // Конвертируем в blob с указанным качеством
   canvas.convertToBlob({
     type: 'image/jpeg',
     quality: quality || 0.7
@@ -24,4 +21,6 @@ addEventListener('message', ({ data }) => {
   }).catch(error => {
     postMessage({ error: error.message });
   });
+
+  console.log('[Web Worker] Image compression task processed');
 });

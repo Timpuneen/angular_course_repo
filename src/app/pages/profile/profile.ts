@@ -62,13 +62,11 @@ export class ProfileComponent implements OnInit {
 
     const file = input.files[0];
 
-    // Валидация типа файла
     if (!file.type.match(/image\/(jpeg|jpg|png)/)) {
       this.uploadError = 'Please select a JPG or PNG image';
       return;
     }
 
-    // Валидация размера (макс 5MB)
     if (file.size > 5 * 1024 * 1024) {
       this.uploadError = 'Image size must be less than 5MB';
       return;
@@ -81,7 +79,6 @@ export class ProfileComponent implements OnInit {
       next: (url) => {
         console.log('Profile picture uploaded:', url);
         
-        // Обновляем локальный профиль
         if (this.userProfile) {
           this.userProfile.profilePictureUrl = url;
         } else {

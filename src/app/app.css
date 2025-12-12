@@ -158,6 +158,57 @@
 }
 
 
+.favorites-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+}
+
+.heart-icon {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+  transition: all 0.3s ease;
+}
+
+.favorites-link:hover .heart-icon {
+  fill: #e74c3c;
+  transform: scale(1.1);
+}
+
+.favorites-link.active .heart-icon {
+  fill: #e74c3c;
+}
+
+.favorites-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: #e74c3c;
+  color: white;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-left: 4px;
+  animation: pulse 0.3s ease;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.8);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 @media (max-width: 768px) {
   .nav-container {
     flex-direction: column;

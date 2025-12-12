@@ -2,8 +2,10 @@ import { Component } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from './services/auth.service';
+import { FavoritesService } from './services/favorites.service';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { User } from '@angular/fire/auth';
 
 @Component({
@@ -16,9 +18,10 @@ import { User } from '@angular/fire/auth';
 export class AppComponent {
   title = 'your-app-name';
   currentUser$: Observable<User | null>;
-
+  
   constructor(
     private authService: AuthService,
+    private favoritesService: FavoritesService,
     private router: Router
   ) {
     this.currentUser$ = this.authService.currentUser$;
