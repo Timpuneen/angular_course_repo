@@ -50,5 +50,30 @@
         </div>
       }
     </div>
+
+    <!-- Pagination Controls -->
+    @if ((items$ | async)?.length) {
+      <div class="pagination">
+        <button 
+          (click)="previousPage()" 
+          [disabled]="currentPage <= 1 || (loading$ | async)"
+          class="pagination-btn"
+        >
+          ← Previous
+        </button>
+
+        <span class="page-info">
+          Page {{ currentPage }} of {{ (totalPages$ | async) || 1 }}
+        </span>
+
+        <button 
+          (click)="nextPage()" 
+          [disabled]="currentPage >= ((totalPages$ | async) || 1) || (loading$ | async)"
+          class="pagination-btn"
+        >
+          Next →
+        </button>
+      </div>
+    }
   }
 </div>

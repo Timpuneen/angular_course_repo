@@ -23,9 +23,12 @@ export class ItemsListComponent implements OnInit, OnDestroy {
   items$!: Observable<Item[]>;
   loading$!: Observable<boolean>;
   error$!: Observable<string | null>;
+  totalPages$!: Observable<number>;
+  currentPage$!: Observable<number>;
   
   // Local state
   searchTerm = '';
+  currentPage = 1;
   
   private searchSubject = new Subject<string>();
   private searchSubscription?: Subscription;
@@ -36,24 +39,32 @@ export class ItemsListComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router
   ) {
-    console.log('[ItemsList] constructor() - NgRx version');
+    console.log('[ItemsList] constructor() - NgRx version with pagination');
     
     // Initialize observables in constructor
     this.items$ = this.store.select(ItemsSelectors.selectItems);
     this.loading$ = this.store.select(ItemsSelectors.selectListLoading);
     this.error$ = this.store.select(ItemsSelectors.selectListError);
+    this.totalPages$ = this.store.select(ItemsSelectors.selectTotalPages);
+    this.currentPage$ = this.store.select(ItemsSelectors.selectCurrentPage);
   }
 
   ngOnInit() {
     console.log('[ItemsList] ngOnInit()');
 
+    // Listen to query params changes
     this.routeSubscription = this.route.queryParams.pipe(
       switchMap(params => {
         const query = params['q'] || '';
-        console.log('[ItemsList] queryParams changed:', params);
+        const page = parseInt(params['page']) || 1;
+        
+        console.log('[ItemsList] queryParams changed:', { query, page });
         
         this.searchTerm = query;
-        this.store.dispatch(ItemsActions.loadItems({ query, page: 1 }));
+        this.currentPage = page;
+        
+        // Dispatch action to load items
+        this.store.dispatch(ItemsActions.loadItems({ query, page }));
         
         return this.error$;
       }),
@@ -63,12 +74,13 @@ export class ItemsListComponent implements OnInit, OnDestroy {
       })
     ).subscribe();
 
+    // Setup search with debounce
     this.searchSubscription = this.searchSubject.pipe(
       debounceTime(500),
       distinctUntilChanged(),
       switchMap(value => {
         console.log('[ItemsList] debounced search with switchMap:', value);
-        this.updateUrlAndSearch(value);
+        this.updateUrlAndSearch(value, 1); // Reset to page 1 on new search
         return [];
       }),
       catchError(error => {
@@ -83,12 +95,15 @@ export class ItemsListComponent implements OnInit, OnDestroy {
     this.searchSubject.next(value);
   }
 
-  updateUrlAndSearch(query: string) {
-    console.log('[ItemsList] updateUrlAndSearch():', query);
+  updateUrlAndSearch(query: string, page: number) {
+    console.log('[ItemsList] updateUrlAndSearch():', { query, page });
 
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { q: query || null },
+      queryParams: { 
+        q: query || null,
+        page: page > 1 ? page : null 
+      },
       queryParamsHandling: 'merge'
     }).then(() => {
       console.log('[ItemsList] URL updated');
@@ -98,12 +113,29 @@ export class ItemsListComponent implements OnInit, OnDestroy {
   clearSearch() {
     console.log('[ItemsList] clearSearch()');
     this.searchTerm = '';
-    this.updateUrlAndSearch('');
+    this.updateUrlAndSearch('', 1);
+  }
+
+  // Pagination methods
+  goToPage(page: number) {
+    console.log('[ItemsList] goToPage():', page);
+    this.updateUrlAndSearch(this.searchTerm, page);
+  }
+
+  nextPage() {
+    console.log('[ItemsList] nextPage()');
+    this.goToPage(this.currentPage + 1);
+  }
+
+  previousPage() {
+    console.log('[ItemsList] previousPage()');
+    if (this.currentPage > 1) {
+      this.goToPage(this.currentPage - 1);
+    }
   }
 
   ngOnDestroy() {
     console.log('[ItemsList] ngOnDestroy()');
-
     this.searchSubscription?.unsubscribe();
     this.routeSubscription?.unsubscribe();
   }

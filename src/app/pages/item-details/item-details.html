@@ -72,41 +72,54 @@
             </div>
 
             <div class="details-list">
+              <!-- Field 1: Status (already shown in badge, but counting as field) -->
+              
+              <!-- Field 2: Species -->
               <div class="detail-item">
                 <span class="detail-label">Species:</span>
                 <span class="detail-value">{{ item.species }}</span>
               </div>
 
-              @if (item.type) {
-                <div class="detail-item">
-                  <span class="detail-label">Type:</span>
-                  <span class="detail-value">{{ item.type }}</span>
-                </div>
-              }
+              <!-- Field 3: Type -->
+              <div class="detail-item">
+                <span class="detail-label">Type:</span>
+                <span class="detail-value">{{ item.type || 'Unknown' }}</span>
+              </div>
 
+              <!-- Field 4: Gender -->
               <div class="detail-item">
                 <span class="detail-label">Gender:</span>
                 <span class="detail-value">{{ item.gender }}</span>
               </div>
 
+              <!-- Field 5: Origin -->
               <div class="detail-item">
                 <span class="detail-label">Origin:</span>
                 <span class="detail-value">{{ item.origin.name }}</span>
               </div>
 
+              <!-- Field 6: Location -->
               <div class="detail-item">
                 <span class="detail-label">Location:</span>
                 <span class="detail-value">{{ item.location.name }}</span>
               </div>
 
+              <!-- Field 7: Episodes -->
               <div class="detail-item">
                 <span class="detail-label">Episodes:</span>
                 <span class="detail-value episodes-count">{{ getEpisodeCount(item) }} episodes</span>
               </div>
 
+              <!-- Field 8: Created (BONUS) -->
               <div class="detail-item">
                 <span class="detail-label">Created:</span>
                 <span class="detail-value">{{ item.created | date: 'medium' }}</span>
+              </div>
+
+              <!-- Field 9: Character ID (BONUS) -->
+              <div class="detail-item">
+                <span class="detail-label">Character ID:</span>
+                <span class="detail-value">#{{ item.id }}</span>
               </div>
             </div>
 
