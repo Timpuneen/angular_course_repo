@@ -12,9 +12,9 @@ import { routes } from './app.routes';
 
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { provideAuth, getAuth } from '@angular/fire/auth';
-import { environment } from '../environments/environment';
-import { provideFirestore, getFirestore } from '@angular/fire/firestore';
+import { provideFirestore, getFirestore, enableIndexedDbPersistence } from '@angular/fire/firestore';
 import { provideStorage, getStorage } from '@angular/fire/storage';
+import { environment } from '../environments/environment';
 
 // NgRx imports
 import { provideStore } from '@ngrx/store';
@@ -33,8 +33,15 @@ export const appConfig: ApplicationConfig = {
     // Firebase
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAuth(() => getAuth()),
-    provideFirestore(() => getFirestore()),
-    provideStorage(() => getStorage()), 
+    provideFirestore(() => {
+      const firestore = getFirestore();
+      // Не включаем persistence в dev режиме для избежания проблем
+      // enableIndexedDbPersistence(firestore).catch((err) => {
+      //   console.warn('Firestore persistence error:', err);
+      // });
+      return firestore;
+    }),
+    provideStorage(() => getStorage()),
     
     // NgRx Store
     provideStore({ items: itemsReducer }),

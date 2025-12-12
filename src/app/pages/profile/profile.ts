@@ -1,38 +1,99 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router'; 
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { ProfileService, UserProfile } from '../../services/profile.service';
 import { User } from '@angular/fire/auth';
+import { switchMap, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './profile.html',
   styleUrls: ['./profile.css']
 })
 export class ProfileComponent implements OnInit {
   user: User | null = null;
+  userProfile: UserProfile | null = null;
   isLoading: boolean = true;
+  isUploading: boolean = false;
+  uploadError: string = '';
 
   constructor(
     private authService: AuthService,
+    private profileService: ProfileService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.authService.currentUser$.subscribe({
-      next: (user) => {
+    this.authService.currentUser$.pipe(
+      tap(user => {
         this.user = user;
-        this.isLoading = false;
-
         if (!user) {
+          this.isLoading = false;
           this.router.navigate(['/login']);
         }
+      }),
+      switchMap(user => {
+        if (user) {
+          return this.profileService.getUserProfile(user.uid);
+        }
+        return [];
+      })
+    ).subscribe({
+      next: (profile) => {
+        this.userProfile = profile;
+        this.isLoading = false;
       },
       error: () => {
         this.isLoading = false;
-        this.router.navigate(['/login']);
+      }
+    });
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    
+    if (!input.files || input.files.length === 0) {
+      return;
+    }
+
+    const file = input.files[0];
+
+    // Валидация типа файла
+    if (!file.type.match(/image\/(jpeg|jpg|png)/)) {
+      this.uploadError = 'Please select a JPG or PNG image';
+      return;
+    }
+
+    // Валидация размера (макс 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      this.uploadError = 'Image size must be less than 5MB';
+      return;
+    }
+
+    this.uploadError = '';
+    this.isUploading = true;
+
+    this.profileService.uploadProfilePicture(file).subscribe({
+      next: (url) => {
+        console.log('Profile picture uploaded:', url);
+        
+        // Обновляем локальный профиль
+        if (this.userProfile) {
+          this.userProfile.profilePictureUrl = url;
+        } else {
+          this.userProfile = { profilePictureUrl: url };
+        }
+        
+        this.isUploading = false;
+      },
+      error: (error) => {
+        console.error('Upload error:', error);
+        this.uploadError = 'Failed to upload image. Please try again.';
+        this.isUploading = false;
       }
     });
   }
