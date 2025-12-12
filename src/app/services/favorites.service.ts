@@ -1,39 +1,60 @@
 import { Injectable } from '@angular/core';
-import { Firestore, doc, setDoc, getDoc, updateDoc } from '@angular/fire/firestore';
+import { Firestore, doc, setDoc, getDoc } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
-import { Observable, from, of, throwError } from 'rxjs';
-import { map, switchMap, catchError } from 'rxjs/operators';
+import { Observable, from, of, BehaviorSubject } from 'rxjs';
+import { map, switchMap, catchError, tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FavoritesService {
   private readonly STORAGE_KEY = 'favorites';
+  
+  private favoritesSubject = new BehaviorSubject<number[]>([]);
+  public favorites$ = this.favoritesSubject.asObservable();
 
   constructor(
     private firestore: Firestore,
     private authService: AuthService
-  ) {}
+  ) {
+    this.initializeFavorites();
+  }
+
+  private initializeFavorites(): void {
+    this.authService.currentUser$.subscribe(user => {
+      if (user) {
+        this.getFavoritesFromFirestore(user.uid).subscribe(favorites => {
+          this.favoritesSubject.next(favorites);
+        });
+      } else {
+        const localFavorites = this.getFavoritesFromLocalStorage();
+        this.favoritesSubject.next(localFavorites);
+      }
+    });
+  }
 
   getFavorites(): Observable<number[]> {
-    return this.authService.currentUser$.pipe(
-      switchMap(user => {
-        if (user) {
-          return this.getFavoritesFromFirestore(user.uid);
-        } else {
-          return of(this.getFavoritesFromLocalStorage());
-        }
-      })
-    );
+    return this.favorites$;
   }
 
   addToFavorites(itemId: number): Observable<void> {
     return this.authService.currentUser$.pipe(
       switchMap(user => {
+        const currentFavorites = this.favoritesSubject.value;
+        
+        if (currentFavorites.includes(itemId)) {
+          return of(void 0); 
+        }
+
+        const newFavorites = [...currentFavorites, itemId];
+
         if (user) {
-          return this.addToFirestore(user.uid, itemId);
+          return this.saveFavoritesToFirestore(user.uid, newFavorites).pipe(
+            tap(() => this.favoritesSubject.next(newFavorites))
+          );
         } else {
-          this.addToLocalStorage(itemId);
+          this.saveFavoritesToLocalStorage(newFavorites);
+          this.favoritesSubject.next(newFavorites);
           return of(void 0);
         }
       })
@@ -43,10 +64,16 @@ export class FavoritesService {
   removeFromFavorites(itemId: number): Observable<void> {
     return this.authService.currentUser$.pipe(
       switchMap(user => {
+        const currentFavorites = this.favoritesSubject.value;
+        const newFavorites = currentFavorites.filter(id => id !== itemId);
+
         if (user) {
-          return this.removeFromFirestore(user.uid, itemId);
+          return this.saveFavoritesToFirestore(user.uid, newFavorites).pipe(
+            tap(() => this.favoritesSubject.next(newFavorites))
+          );
         } else {
-          this.removeFromLocalStorage(itemId);
+          this.saveFavoritesToLocalStorage(newFavorites);
+          this.favoritesSubject.next(newFavorites);
           return of(void 0);
         }
       })
@@ -54,11 +81,14 @@ export class FavoritesService {
   }
 
   isFavorite(itemId: number): Observable<boolean> {
-    return this.getFavorites().pipe(
+    return this.favorites$.pipe(
       map(favorites => favorites.includes(itemId))
     );
   }
 
+  getCurrentFavorites(): number[] {
+    return this.favoritesSubject.value;
+  }
 
   private getFavoritesFromLocalStorage(): number[] {
     try {
@@ -69,19 +99,10 @@ export class FavoritesService {
     }
   }
 
-  private addToLocalStorage(itemId: number): void {
-    const favorites = this.getFavoritesFromLocalStorage();
-    if (!favorites.includes(itemId)) {
-      favorites.push(itemId);
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(favorites));
-    }
+  private saveFavoritesToLocalStorage(favorites: number[]): void {
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(favorites));
   }
 
-  private removeFromLocalStorage(itemId: number): void {
-    const favorites = this.getFavoritesFromLocalStorage();
-    const filtered = favorites.filter(id => id !== itemId);
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(filtered));
-  }
 
   private getFavoritesFromFirestore(uid: string): Observable<number[]> {
     const docRef = doc(this.firestore, `users/${uid}`);
@@ -98,26 +119,9 @@ export class FavoritesService {
     );
   }
 
-  private addToFirestore(uid: string, itemId: number): Observable<void> {
-    return this.getFavoritesFromFirestore(uid).pipe(
-      switchMap(favorites => {
-        if (!favorites.includes(itemId)) {
-          favorites.push(itemId);
-        }
-        const docRef = doc(this.firestore, `users/${uid}`);
-        return from(setDoc(docRef, { favorites }, { merge: true }));
-      })
-    );
-  }
-
-  private removeFromFirestore(uid: string, itemId: number): Observable<void> {
-    return this.getFavoritesFromFirestore(uid).pipe(
-      switchMap(favorites => {
-        const filtered = favorites.filter(id => id !== itemId);
-        const docRef = doc(this.firestore, `users/${uid}`);
-        return from(setDoc(docRef, { favorites: filtered }, { merge: true }));
-      })
-    );
+  private saveFavoritesToFirestore(uid: string, favorites: number[]): Observable<void> {
+    const docRef = doc(this.firestore, `users/${uid}`);
+    return from(setDoc(docRef, { favorites }, { merge: true }));
   }
 
   syncLocalToFirestore(uid: string): Observable<void> {
@@ -131,10 +135,10 @@ export class FavoritesService {
       switchMap(cloudFavorites => {
         const merged = Array.from(new Set([...cloudFavorites, ...localFavorites]));
         
-        const docRef = doc(this.firestore, `users/${uid}`);
-        return from(setDoc(docRef, { favorites: merged }, { merge: true })).pipe(
-          map(() => {
+        return this.saveFavoritesToFirestore(uid, merged).pipe(
+          tap(() => {
             localStorage.removeItem(this.STORAGE_KEY);
+            this.favoritesSubject.next(merged);
             console.log('✅ Local favorites synced to Firestore');
           })
         );

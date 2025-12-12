@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, Subscription, Observable } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { Item } from '../../services/item.service';
@@ -47,24 +47,35 @@ export class ItemsListComponent implements OnInit, OnDestroy {
   ngOnInit() {
     console.log('[ItemsList] ngOnInit()');
 
-    this.routeSubscription = this.route.queryParams.subscribe(params => {
-      const query = params['q'] || '';
-
-      console.log('[ItemsList] queryParams changed:', params);
-      console.log('[ItemsList] Dispatching loadItems with query:', query);
-
-      this.searchTerm = query;
-      
-      this.store.dispatch(ItemsActions.loadItems({ query, page: 1 }));
-    });
+    this.routeSubscription = this.route.queryParams.pipe(
+      switchMap(params => {
+        const query = params['q'] || '';
+        console.log('[ItemsList] queryParams changed:', params);
+        
+        this.searchTerm = query;
+        this.store.dispatch(ItemsActions.loadItems({ query, page: 1 }));
+        
+        return this.error$;
+      }),
+      catchError(error => {
+        console.error('[ItemsList] Error in route subscription:', error);
+        return [];
+      })
+    ).subscribe();
 
     this.searchSubscription = this.searchSubject.pipe(
       debounceTime(500),
-      distinctUntilChanged()
-    ).subscribe(value => {
-      console.log('[ItemsList] debounced search:', value);
-      this.updateUrlAndSearch(value);
-    });
+      distinctUntilChanged(),
+      switchMap(value => {
+        console.log('[ItemsList] debounced search with switchMap:', value);
+        this.updateUrlAndSearch(value);
+        return [];
+      }),
+      catchError(error => {
+        console.error('[ItemsList] Error in search:', error);
+        return [];
+      })
+    ).subscribe();
   }
 
   onSearchChange(value: string) {

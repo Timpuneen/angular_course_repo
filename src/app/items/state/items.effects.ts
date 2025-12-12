@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
-import { map, catchError, switchMap } from 'rxjs/operators';
+import { map, catchError, switchMap, tap } from 'rxjs/operators';
 import { ItemsService } from '../../services/item.service';
 import * as ItemsActions from './items.actions';
 
@@ -13,10 +13,12 @@ export class ItemsEffects {
   loadItems$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(ItemsActions.loadItems),
+      tap(action => console.log('[ItemsEffects] loadItems action triggered:', action)),
       switchMap(({ query, page }) => {
         console.log('[ItemsEffects] loadItems$ → query:', query, 'page:', page);
         
         return this.itemsService.getItems(query, page).pipe(
+          tap(res => console.log('[ItemsEffects] API response received:', res)),
           map((response) => {
             console.log('[ItemsEffects] loadItems$ → SUCCESS:', response);
             return ItemsActions.loadItemsSuccess({ response });
@@ -38,10 +40,12 @@ export class ItemsEffects {
   loadItem$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(ItemsActions.loadItem),
+      tap(action => console.log('[ItemsEffects] loadItem action triggered:', action)),
       switchMap(({ id }) => {
         console.log('[ItemsEffects] loadItem$ → id:', id);
         
         return this.itemsService.getItemById(id).pipe(
+          tap(item => console.log('[ItemsEffects] Item data received:', item)),
           map((item) => {
             console.log('[ItemsEffects] loadItem$ → SUCCESS:', item);
             return ItemsActions.loadItemSuccess({ item });

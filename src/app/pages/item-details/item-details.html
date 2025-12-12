@@ -1,7 +1,7 @@
 <div class="item-details-container">
   <!-- Loading State -->
   @if (loading$ | async) {
-    <div class="loading-container">
+    <div class="loading-state">
       <div class="spinner"></div>
       <p>Loading character details...</p>
     </div>
@@ -9,11 +9,12 @@
 
   <!-- Error State -->
   @if (error$ | async; as errorMessage) {
-    <div class="error-container">
+    <div class="error-state">
+      <div class="error-icon">⚠️</div>
       <h2>Oops!</h2>
       <p class="error-message">{{ errorMessage }}</p>
       
-      <div class="error-actions">
+      <div class="button-group">
         <button (click)="goBack()" class="btn btn-secondary">
           Go Back
         </button>
@@ -26,65 +27,95 @@
 
   <!-- Item Details -->
   @if ((loading$ | async) === false && !(error$ | async) && (item$ | async); as item) {
-    <div class="details-card">
-      <div class="details-header">
-        <button (click)="goBack()" class="back-button">
+    <div class="details-container">
+      <div class="back-button-container">
+        <button (click)="goBack()" class="btn btn-back">
           ← Back
         </button>
-        <a routerLink="/items" class="list-link">View All Characters</a>
       </div>
 
       <div class="details-content">
-        <div class="details-image">
-          <img [src]="item.image" [alt]="item.name" />
-        </div>
-
-        <div class="details-info">
-          <h1>{{ item.name }}</h1>
-
-          <div class="info-grid">
-            <div class="info-item">
-              <span class="info-label">Status:</span>
-              <span class="info-value" [class]="'status-' + item.status.toLowerCase()">
+        <div class="details-grid">
+          <!-- Image Section -->
+          <div class="image-section">
+            <div class="image-wrapper">
+              <img [src]="item.image" [alt]="item.name" />
+              <span class="status-badge" [class]="'status-' + item.status.toLowerCase()">
                 {{ item.status }}
               </span>
             </div>
+          </div>
 
-            <div class="info-item">
-              <span class="info-label">Species:</span>
-              <span class="info-value">{{ item.species }}</span>
+          <!-- Info Section -->
+          <div class="info-section">
+            <div class="title-row">
+              <h1 class="character-name">{{ item.name }}</h1>
+              
+              <!-- Кнопка Favorite -->
+              <button 
+                class="favorite-button-details" 
+                [class.is-favorite]="isFavorite$ | async"
+                [disabled]="isProcessing"
+                (click)="toggleFavorite(item.id)"
+                [title]="(isFavorite$ | async) ? 'Remove from favorites' : 'Add to favorites'"
+              >
+                <svg 
+                  class="heart-svg" 
+                  [class.filled]="isFavorite$ | async"
+                  viewBox="0 0 24 24" 
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+                <span class="favorite-text">{{ (isFavorite$ | async) ? 'In Favorites' : 'Add to Favorites' }}</span>
+              </button>
             </div>
 
-            @if (item.type) {
-              <div class="info-item">
-                <span class="info-label">Type:</span>
-                <span class="info-value">{{ item.type }}</span>
+            <div class="details-list">
+              <div class="detail-item">
+                <span class="detail-label">Species:</span>
+                <span class="detail-value">{{ item.species }}</span>
               </div>
-            }
 
-            <div class="info-item">
-              <span class="info-label">Gender:</span>
-              <span class="info-value">{{ item.gender }}</span>
+              @if (item.type) {
+                <div class="detail-item">
+                  <span class="detail-label">Type:</span>
+                  <span class="detail-value">{{ item.type }}</span>
+                </div>
+              }
+
+              <div class="detail-item">
+                <span class="detail-label">Gender:</span>
+                <span class="detail-value">{{ item.gender }}</span>
+              </div>
+
+              <div class="detail-item">
+                <span class="detail-label">Origin:</span>
+                <span class="detail-value">{{ item.origin.name }}</span>
+              </div>
+
+              <div class="detail-item">
+                <span class="detail-label">Location:</span>
+                <span class="detail-value">{{ item.location.name }}</span>
+              </div>
+
+              <div class="detail-item">
+                <span class="detail-label">Episodes:</span>
+                <span class="detail-value episodes-count">{{ getEpisodeCount(item) }} episodes</span>
+              </div>
+
+              <div class="detail-item">
+                <span class="detail-label">Created:</span>
+                <span class="detail-value">{{ item.created | date: 'medium' }}</span>
+              </div>
             </div>
 
-            <div class="info-item">
-              <span class="info-label">Origin:</span>
-              <span class="info-value">{{ item.origin.name }}</span>
-            </div>
-
-            <div class="info-item">
-              <span class="info-label">Location:</span>
-              <span class="info-value">{{ item.location.name }}</span>
-            </div>
-
-            <div class="info-item">
-              <span class="info-label">Episodes:</span>
-              <span class="info-value">{{ getEpisodeCount(item) }}</span>
-            </div>
-
-            <div class="info-item">
-              <span class="info-label">Created:</span>
-              <span class="info-value">{{ item.created | date: 'medium' }}</span>
+            <div class="action-buttons">
+              <div class="button-group">
+                <a routerLink="/items" class="btn btn-primary">
+                  View All Characters
+                </a>
+              </div>
             </div>
           </div>
         </div>

@@ -3,6 +3,8 @@ import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
+import { FavoritesService } from '../../services/favorites.service';
+import { map } from 'rxjs/operators';
 
 import { Item } from '../../services/item.service';
 import * as ItemsActions from '../../items/state/items.actions';
@@ -19,12 +21,15 @@ export class ItemDetailsComponent implements OnInit, OnDestroy {
   item$!: Observable<Item | null>;
   loading$!: Observable<boolean>;
   error$!: Observable<string | null>;
+  isFavorite$!: Observable<boolean>;  
+  isProcessing = false;  
 
   constructor(
     private store: Store,
     private route: ActivatedRoute,
     private router: Router,
-    private location: Location
+    private location: Location,
+    private favoritesService: FavoritesService  
   ) {
     console.log('[ItemDetails] constructor() - NgRx version');
     
@@ -41,13 +46,37 @@ export class ItemDetailsComponent implements OnInit, OnDestroy {
       
       if (id) {
         console.log('[ItemDetails] Loading item with id:', id);
-        // Dispatch action to load item
         this.store.dispatch(ItemsActions.loadItem({ id }));
+        
+        this.isFavorite$ = this.favoritesService.isFavorite(Number(id));
       } else {
         console.error('[ItemDetails] No ID in route params');
         this.store.dispatch(ItemsActions.loadItemFailure({ 
           error: 'Invalid character ID' 
         }));
+      }
+    });
+  }
+
+  toggleFavorite(itemId: number): void {
+    if (this.isProcessing) return;
+
+    this.isProcessing = true;
+
+    const currentFavorites = this.favoritesService.getCurrentFavorites();
+    const isFav = currentFavorites.includes(itemId);
+
+    const action$ = isFav 
+      ? this.favoritesService.removeFromFavorites(itemId)
+      : this.favoritesService.addToFavorites(itemId);
+
+    action$.subscribe({
+      next: () => {
+        this.isProcessing = false;
+      },
+      error: (err) => {
+        this.isProcessing = false;
+        console.error('Error toggling favorite:', err);
       }
     });
   }
